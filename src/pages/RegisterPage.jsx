@@ -126,6 +126,7 @@ const RegisterPage = () => {
     return "bg-red-500";
   };
 
+  /*
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!isFormValid()) return;
@@ -136,6 +137,44 @@ const RegisterPage = () => {
       navigate("/dashboard");
     }, 800);
   };
+  */
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!isFormValid()) return;
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          full_name: formData.fullName,
+          email: formData.email,
+          id_number: formData.idNumber,
+          password: formData.password,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("✅ Registered user:", data);
+        alert("Account created successfully!");
+        navigate("/login");
+      } else {
+        const errorData = await response.json();
+        alert(`⚠️ Registration failed: ${errorData.detail || "Unknown error"}`);
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      alert("❌ Failed to connect to the server. Please check your backend.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-navy-900 dark:bg-navy-50 flex items-center justify-center p-4">

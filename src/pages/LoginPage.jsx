@@ -25,6 +25,7 @@ const LoginPage = () => {
     return newErrors;
   };
 
+  /*
   const handleSubmit = (e) => {
     e.preventDefault();
     const newErrors = validate();
@@ -39,6 +40,35 @@ const LoginPage = () => {
       navigate("/dashboard");
     }, 800);
   };
+  */
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://127.0.0.1:8000/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("✅ Logged in:", data);
+        alert("Login successful!");
+        navigate("/dashboard");
+      } else {
+        const error = await response.json();
+        alert(`⚠️ Login failed: ${error.detail}`);
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      alert("❌ Failed to connect to backend.");
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-navy-900 dark:bg-navy-50 flex items-center justify-center p-4">
